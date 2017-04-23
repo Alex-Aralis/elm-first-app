@@ -1,5 +1,6 @@
 import Html.Events exposing (..)
-import Html exposing (Html, button, text, div)
+import Html.Attributes exposing (..)
+import Html exposing (Html, button, text, div, span)
 
 type Msg = Reset | Increment Int | Decrement Int
 type alias Model = { counter1: Int, counter2: Int }
@@ -24,6 +25,20 @@ update msg model =
         2 -> { model | counter2 = model.counter2 - 1}
         otherwise -> model
 
+color colorS = [("background", colorS)]
+
+counterDisplay counter = 
+  let 
+    colorString = 
+      case compare counter 0 of
+        EQ -> "grey"
+        GT -> "green"
+        LT -> "red"
+    styleAtt = style <| color colorString
+
+  in
+    span [styleAtt] 
+      [text <| toString counter]
 
 view : Model -> Html Msg
 view model =
@@ -33,6 +48,6 @@ view model =
     ,button [onClick (Increment 2)] [text "inc2"]
     ,button [onClick (Decrement 2)] [text "dec2"]
     ,button [onClick Reset] [text "reset"]
-    ,text <| toString model.counter1
-    ,text <| toString model.counter2
+    ,counterDisplay model.counter1
+    ,counterDisplay model.counter2
     ]
