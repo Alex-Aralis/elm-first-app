@@ -3,6 +3,7 @@ import Html.Attributes exposing (src, style)
 import Html exposing (Html, div, text, button, img)
 import Random
 
+main : Program Never Model Msg
 main = 
   Html.program
     {
@@ -14,12 +15,12 @@ main =
 
 type alias Model = 
   { 
-    dieFace: Int 
+    dieFace: Int
   }
 
 type Msg = Roll | NewFace Int
 
-
+size : a -> b -> Html.Attribute msg
 size x y = 
   let
     toPx n = (toString n) ++ "px"
