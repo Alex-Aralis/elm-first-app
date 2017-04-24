@@ -13,16 +13,33 @@ main = Html.program {
 
 type alias Model = 
     {
-      gifUrl: String,
+      gifUrl: GifUrl,
       topic: String
     }
 
+type alias FetchedData data = 
+  {
+    data: data,
+    valid: Bool
+  }
+
+invalidate : FetchedData dataType -> FetchedData dataType
+invalidate fetchedData = { fetchedData | valid = False }
+
+validate : FetchedData dataType -> FetchedData dataType
+validate fetchedData = { fetchedData | valid = True }
+
+type alias GifUrl = FetchedData String
 
 init : (Model, Cmd Msg)
 init = 
   (
     {
-      gifUrl = "https://media.giphy.com/media/13CoXDiaCcCoyk/giphy.gif",
+      gifUrl = 
+        { 
+          data = "https://media.giphy.com/media/13CoXDiaCcCoyk/giphy.gif",
+          valid = True 
+        },
       topic = "cats"
     },
     Cmd.none
@@ -36,11 +53,13 @@ type Msg =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = 
   case msg of 
-    MorePls -> (model, getGifUrl model.topic)
+    MorePls -> ({ model | gifUrl = invalidate model.gifUrl }, getGifUrl model.topic)
 
-    NewGif (Ok url) -> ({ model | gifUrl = url }, Cmd.none)
+    NewGif (Ok url) -> ({ model | gifUrl = { data = url, valid = True } }, Cmd.none)
 
     NewGif (Err _) -> (model, Cmd.none)
+
+
 
 
 getGifUrl : String -> Cmd Msg
@@ -52,6 +71,16 @@ getGifUrl topic =
   in
     Http.send NewGif request
 
+imageView : GifUrl -> Html Msg
+imageView gifUrl =
+  case gifUrl.valid of 
+    True -> 
+      img [src gifUrl.data] []
+
+    False ->
+      img [src "https://media.giphy.com/media/UxREcFThpSEqk/giphy.gif"] []
+
+
 view : Model -> Html Msg
 view model =
   div [] 
@@ -60,10 +89,7 @@ view model =
         [
           text model.topic
         ],
-      img [src model.gifUrl]
-        [
-          text model.gifUrl
-        ],
+      imageView model.gifUrl,
       div [] [
         button [onClick MorePls]
           [
