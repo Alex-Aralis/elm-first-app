@@ -1,8 +1,9 @@
-import Html exposing (Html, div, img, text, button, h2)
-import Html.Events exposing (onClick)
-import Html.Attributes exposing (src)
+import Html exposing (Html, div, img, text, button, h2, input)
+import Html.Events exposing (onClick, onInput)
+import Html.Attributes exposing (src, type_, defaultValue)
 import Http
 import Json.Decode as Decode
+import Tuple exposing (first, second)
 
 main = Html.program {
     subscriptions = always Sub.none,
@@ -48,6 +49,7 @@ init =
 type Msg = 
     MorePls
   | NewGif (Result Http.Error String)
+  | SetTopic String
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -58,6 +60,8 @@ update msg model =
     NewGif (Ok url) -> ({ model | gifUrl = { data = url, valid = True } }, Cmd.none)
 
     NewGif (Err _) -> (model, Cmd.none)
+
+    SetTopic topic -> ({ model | topic = topic }, Cmd.none)
 
 
 
@@ -85,10 +89,7 @@ view : Model -> Html Msg
 view model =
   div [] 
     [
-      h2 []
-        [
-          text model.topic
-        ],
+      input [type_ "text", defaultValue <| .topic <| first init, onInput SetTopic] [],
       imageView model.gifUrl,
       div [] [
         button [onClick MorePls]
