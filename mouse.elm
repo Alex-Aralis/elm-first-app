@@ -36,9 +36,15 @@ view model =
   div [] [
     posView model.pos,
     mouseView model.pos,
-    clicksView model.clicks
+    clicksView model.clicks,
+    screenView
   ]
 
+screenView : Html action
+screenView = 
+  div [
+    style [("position", "fixed"), ("left", "0px"), ("right", "0px"), ("top", "0px"), ("bottom", "0px")]
+  ] []
 
 posView : Position -> Html action
 posView pos = 
@@ -63,8 +69,11 @@ mouseView pos =
 
     sizeSty = 
       [("width", toPx w), ("height", toPx h)]
+    
+    circle = 
+      [("border-radius", toPx <| Basics.max w h)]
 
-    sty = style <| locSty ++ colorSty ++ sizeSty
+    sty = style <| locSty ++ colorSty ++ sizeSty ++ circle
   in
     div [sty] []
 
@@ -82,8 +91,14 @@ clicksView posList =
 
         color = 
           [("background", "cyan")]
-        
-        sty = style <| location ++ color
+
+        unSelectable = 
+          [("user-select", "none")]
+
+        unDraggable = 
+          [("-webkit-user-drag", "none"), ("user-drag", "none")]
+
+        sty = style <| location ++ color ++ unSelectable ++ unDraggable
       in 
         div [sty] [text <| toString pos]
   in
