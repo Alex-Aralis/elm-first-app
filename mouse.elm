@@ -48,11 +48,46 @@ posView pos =
 
 mouseView : Position -> Html action
 mouseView pos = 
-  div [] []
+  let 
+    toPx v = 
+      (toString v) ++ "px"
+
+    w = 50
+    h = 50
+
+    locSty = 
+      [("position", "fixed"), ("left", toPx <| pos.x - w//2), ("top", toPx <| pos.y - h//2)]
+    
+    colorSty = 
+      [("background", "orange")]
+
+    sizeSty = 
+      [("width", toPx w), ("height", toPx h)]
+
+    sty = style <| locSty ++ colorSty ++ sizeSty
+  in
+    div [sty] []
 
 clicksView : List Position -> Html action
 clicksView posList =
-  List.map posView posList |> List.reverse |> div []
+  let
+
+    clickView pos =
+      let
+        toPx v = 
+          (toString v) ++ "px"
+
+        location = 
+          [("position", "fixed"), ("left", toPx pos.x), ("top", toPx pos.y)]
+
+        color = 
+          [("background", "cyan")]
+        
+        sty = style <| location ++ color
+      in 
+        div [sty] [text <| toString pos]
+  in
+    posList |> List.map clickView |> div []
 
 
 main = 
